@@ -1,9 +1,9 @@
 {
-    "name": "JMTHON USERBOT - سورس جمثون",
+    "name": "TEPTHON USERBOT - سورس تيبثون",
     "description": "تنصيب سورس جمثون مجانا على منصة سكالينجو",
     "addons": ["scalingo-postgresql"],
     "keywords": ["jmthon", "userbot","scalingo"],
-    "repository": "https://github.com/thejmthon/sbb_b0",
+    "repository": "https://github.com/Tepthonee/tt8_rr",
   "stack": "container",
     "env": {
         "ALIVE_NAME": {
