@@ -6,9 +6,8 @@ import urllib.request
 from datetime import timedelta
 from pathlib import Path
 
-from telethon import Button, functions, types
+from telethon import Button, functions, types, utils
 from telethon.tl.functions.channels import JoinChannelRequest
-from telethon.utils import get_peer_id
 
 from sbb_b import BOTLOG, BOTLOG_CHATID, PM_LOGGER_GROUP_ID
 
@@ -26,7 +25,7 @@ from .pluginmanager import load_module
 from .tools import create_supergroup
 
 ENV = bool(os.environ.get("ENV", False))
-LOGS = logging.getLogger("اعداد جمثون")
+LOGS = logging.getLogger("اعداد تيبثون")
 cmdhr = Config.COMMAND_HAND_LER
 
 if ENV:
@@ -36,14 +35,31 @@ elif os.path.exists("config.py"):
 
 
 async def setup_bot():
-    sbb_b.me = await sbb_b.get_me()
-    sbb_b.uid = sbb_b.me.id
-    if Config.OWNER_ID == 0:
-        Config.OWNER_ID = get_peer_id(sbb_b.me)
-    await sbb_b.tgbot.start(bot_token=Config.TG_BOT_USERNAME)
-    sbb_b.tgbot.me = await sbb_b.tgbot.get_me()
-    bot_details = sbb_b.tgbot.me
-    Config.TG_BOT_USERNAME = f"@{bot_details.username}"
+    """
+    لاعداد السورس
+    """
+    try:
+        await sbb_b.connect()
+        config = await sbb_b(functions.help.GetConfigRequest())
+        for option in config.dc_options:
+            if option.ip_address == sbb_b.session.server_address:
+                if sbb_b.session.dc_id != option.id:
+                    LOGS.warning(
+                        f"اصلاح الداتا {sbb_b.session.dc_id}" f" الى {option.id}"
+                    )
+                sbb_b.session.set_dc(option.id, option.ip_address, option.port)
+                sbb_b.session.save()
+                break
+        bot_details = await sbb_b.tgbot.get_me()
+        Config.TG_BOT_USERNAME = f"@{bot_details.username}"
+        # await sbb_b.start(bot_token=Config.TG_BOT_USERNAME)
+        sbb_b.me = await sbb_b.get_me()
+        sbb_b.uid = sbb_b.tgbot.uid = utils.get_peer_id(sbb_b.me)
+        if Config.OWNER_ID == 0:
+            Config.OWNER_ID = utils.get_peer_id(sbb_b.me)
+    except Exception as e:
+        LOGS.error(f"STRING_SESSION - {e}")
+        sys.exit()
 
 
 async def saves():
@@ -54,11 +70,23 @@ async def saves():
     except Exception as e:
         print(str(e))
     try:
-        await sbb_b(JoinChannelRequest("@jmthon"))
-        await sbb_b(JoinChannelRequest("@RR7PP"))
-        await sbb_b(JoinChannelRequest("@jmthon_help"))
-        await sbb_b(JoinChannelRequest("@thejmthon"))
-        await sbb_b(JoinChannelRequest("@Talconz"))
+        await sbb_b(JoinChannelRequest("@Tepthone"))
+    except BaseException:
+        pass
+    try:
+        await sbb_b(JoinChannelRequest("@P17_12"))
+    except BaseException:
+        pass
+    try:
+        await sbb_b(JoinChannelRequest("@Tepthon_Help"))
+    except BaseException:
+        pass
+    try:
+        await sbb_b(JoinChannelRequest("@SOURCE_TEPTHONE"))
+    except BaseException:
+        pass
+    try:
+        await sbb_b(JoinChannelRequest("@tepthon4"))
     except BaseException:
         pass
 
@@ -70,7 +98,7 @@ async def mybot():
     f"ـ {rz_ment}"
     f"⪼ هذا هو بوت خاص بـ {rz_ment} يمكنك التواصل معه هنا"
     starkbot = await sbb_b.tgbot.get_me()
-    perf = "[ جمثون ]"
+    perf = "[ تيبثون ]"
     bot_name = starkbot.first_name
     botname = f"@{starkbot.username}"
     if bot_name.endswith("Assistant"):
@@ -95,9 +123,9 @@ async def startupmessage():
         if BOTLOG:
             Config.JMTHONLOGO = await sbb_b.tgbot.send_file(
                 BOTLOG_CHATID,
-                "https://graph.org//file/c20c4f492da1811e1bef0.jpg",
-                caption="**تم تشغيل سورس جمثون بنجاح لعرض الاوامر ارسل .الاوامر**",
-                buttons=[(Button.url("كروب المساعدة", "https://t.me/jmthon_support"),)],
+                "https://telegra.ph/file/577bd6562f22ca288f645.jpg",
+                caption="**تم تشغيل سورس تيبثون بنجاح لعرض الاوامر ارسل .الاوامر**",
+                buttons=[(Button.url("كروب المساعدة", "https://t.me/Tepthon_Suppprt"),)],
             )
     except Exception as e:
         LOGS.error(e)
@@ -238,9 +266,9 @@ async def verifyLoggerGroup():
             LOGS.error("هنالك خطا ما للتعرف على فار كروب الحفظ\n" + str(e))
     else:
         descript = "⪼ هذه هي مجموعه الحفظ الخاصه بك لا تحذفها ابدا  𓆰."
-        photobt = await sbb_b.upload_file(file="razan/pic/Jmthonp.jpg")
+        photobt = await sbb_b.upload_file(file="razan/pic/tepthon.jpeg")
         _, groupid = await create_supergroup(
-            "كروب بوت جمثون", sbb_b, Config.TG_BOT_USERNAME, descript, photobt
+            "كروب بوت تيبثون", sbb_b, Config.TG_BOT_USERNAME, descript, photobt
         )
         addgvar("PRIVATE_GROUP_BOT_API_ID", groupid)
         print("تم انشاء كروب الحفظ بنجاح")
@@ -263,7 +291,7 @@ async def verifyLoggerGroup():
             LOGS.error("حدث خطأ اثناء التعرف على كروب التخزين\n" + str(e))
     else:
         descript = "❃ لا تحذف او تغادر المجموعه وظيفتها حفظ رسائل التي تأتي على الخاص"
-        photobt = await sbb_b.upload_file(file="razan/pic/Jmthonp.jpg")
+        photobt = await sbb_b.upload_file(file="razan/pic/tepthon.jpeg")
         _, groupid = await create_supergroup(
             "مجموعة التخزين", sbb_b, Config.TG_BOT_USERNAME, descript, photobt
         )
